@@ -12,22 +12,18 @@ from typing import List
 class Vegetable(BaseModel):
     # Represents a vegetable with its properties
     name: str
-    color: str
-    weight: float
-    price: float
-    img_url: str
 
 
-class VegetableList(BaseModel):
-    vegetableList: List[Vegetable]
+class Vegetables(BaseModel):
+    vegetables: List[Vegetable]
 
 
 # Create FastAPI application
-app = FastAPI()
+app = FastAPI(debug=True)
 
 # List of origins that are allowed to access the API
 origins = [
-    "http://localhost:3000"
+    "http://localhost:5173"
 ]
 
 # Enable CORS middleware (Cross-Origin Resource Sharing) for the specified origins
@@ -46,17 +42,17 @@ app.add_middleware(
 memory_db = {"vegetables": []}
 
 # Define root endpoint
-# At "vegetables" endpoint, define reponse model returned from enpoint will be VegetableList
+# At "vegetables" endpoint, define reponse model returned from enpoint will be Vegetables
 # Will convert into JSON format automatically so API can injest and read
-@app.get("/vegetables", response_model=VegetableList)
+@app.get("/vegetables", response_model=Vegetables)
 def get_vegetables():
     # Return instance of VegetableList class, wraps memory_db["vegetables"] into python object, returned as JSON
-    return VegetableList(vegetableList=memory_db["vegetables"])
+    return Vegetables(vegetables=memory_db["vegetables"])
 
-# Post to the /vegetables endpoint, only returning Vegetable object (set to reponse_model)
+# Post to the /vegetables endpoint
 # Post request used to create new data
-@app.post("/vegetables", response_model=Vegetable)
-# Define the function to accept a Vegetable object as input and add to the Vegetable list
+@app.post("/vegetables")
+# Define the function to accept a Vegetable object as input and add to the Vegetables list
 def add_vegetable(vegetable: Vegetable):
     # Add vegetable to in-memory database
     memory_db["vegetables"].append(vegetable)
